@@ -1,0 +1,19 @@
+# Java
+target/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+
+# Environment variables
+.env
+
+# Mac
+.DS_Store
