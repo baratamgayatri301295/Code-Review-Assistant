@@ -1,88 +1,135 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
+import {
+    Container,
+    Paper,
+    Typography,
+    TextField,
+    MenuItem,
+    Button,
+    Alert,
+    CircularProgress,
+} from "@mui/material";
+
 function SubmitCode() {
-    const [formData, setFormData] = useState({
+    const navigate = useNavigate();
+
+    const [form, setForm] = useState({
         userId: 1,
         title: "",
         language: "java",
+        description: "",
         codeContent: "",
-        description: ""
     });
 
-    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value,
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setLoading(true);
+        setError("");
+
         try {
-            const response = await api.post("/submissions", formData);
-            setMessage("✅ Code submitted successfully!");
-            console.log(response.data);
-        } catch (error) {
-            console.error(error);
-            setMessage("❌ Submission failed.");
+            await api.post("/submissions", form);
+
+            alert("Submission created successfully!");
+
+            navigate("/history");
+        } catch (err) {
+            console.error(err);
+            setError("Failed to submit code.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div style={{ maxWidth: "900px", margin: "40px auto" }}>
-            <h2>Submit Your Code</h2>
+        <Container maxWidth="md" sx={{ mt: 5 }}>
+            <Paper elevation={4} sx={{ p: 4 }}>
+                <Typography variant="h4" gutterBottom>
+                    Submit Your Code
+                </Typography>
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="Title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    style={{ width: "100%", padding: "10px", marginBottom: "15px" }}
-                />
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Alert>
+                )}
 
-                <select
-                    name="language"
-                    value={formData.language}
-                    onChange={handleChange}
-                    style={{ width: "100%", padding: "10px", marginBottom: "15px" }}
-                >
-                    <option value="java">Java</option>
-                    <option value="python">Python</option>
-                    <option value="javascript">JavaScript</option>
-                    <option value="cpp">C++</option>
-                </select>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        fullWidth
+                        label="Title"
+                        name="title"
+                        margin="normal"
+                        value={form.title}
+                        onChange={handleChange}
+                        required
+                    />
 
-                <textarea
-                    name="codeContent"
-                    rows="12"
-                    placeholder="Paste your code here..."
-                    value={formData.codeContent}
-                    onChange={handleChange}
-                    style={{ width: "100%", marginBottom: "15px" }}
-                />
+                    <TextField
+                        select
+                        fullWidth
+                        label="Language"
+                        name="language"
+                        margin="normal"
+                        value={form.language}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value="java">Java</MenuItem>
+                        <MenuItem value="python">Python</MenuItem>
+                        <MenuItem value="javascript">JavaScript</MenuItem>
+                    </TextField>
 
-                <textarea
-                    name="description"
-                    rows="4"
-                    placeholder="Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    style={{ width: "100%", marginBottom: "15px" }}
-                />
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        name="description"
+                        margin="normal"
+                        value={form.description}
+                        onChange={handleChange}
+                    />
 
-                <button type="submit">
-                    Submit Code
-                </button>
-            </form>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={12}
+                        label="Paste your code here"
+                        name="codeContent"
+                        margin="normal"
+                        value={form.codeContent}
+                        onChange={handleChange}
+                        required
+                    />
 
-            <h3>{message}</h3>
-        </div>
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        fullWidth
+                        size="large"
+                        sx={{ mt: 3 }}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            "Submit Code"
+                        )}
+                    </Button>
+                </form>
+            </Paper>
+        </Container>
     );
 }
 
