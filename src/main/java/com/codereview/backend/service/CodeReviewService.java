@@ -47,13 +47,25 @@ public class CodeReviewService {
 
     public CodeReviewResponse analyzeCode(Integer submissionId) {
 
+        // Check if submission exists
         CodeSubmission submission = getSubmission(submissionId);
 
+        // Check if review already exists
+        CodeReview existingReview = reviewRepository
+                .findBySubmissionId(submissionId)
+                .orElse(null);
+
+        if (existingReview != null) {
+            return CodeReviewResponse.fromEntity(existingReview);
+        }
+
+        // Call OpenAI
         String feedback = openAIService.analyzeCode(
                 submission.getCodeContent(),
                 submission.getLanguage(),
                 submission.getTitle());
 
+        // Save review
         CodeReview review = CodeReview.builder()
                 .submissionId(submissionId)
                 .feedback(feedback)

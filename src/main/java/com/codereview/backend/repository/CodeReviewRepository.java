@@ -8,3 +8,4 @@ public interface CodeReviewRepository extends JpaRepository<CodeReview, Integer>
 
     Optional<CodeReview> findBySubmissionId(Integer submissionId);
 }
+
