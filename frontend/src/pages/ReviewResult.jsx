@@ -2,65 +2,137 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../services/api";
 
+import {
+    Container,
+    Card,
+    CardContent,
+    Typography,
+    CircularProgress,
+    Alert,
+    Grid,
+} from "@mui/material";
+
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 function ReviewResult() {
     const { id } = useParams();
 
     const [review, setReview] = useState(null);
+    const [submission, setSubmission] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
     useEffect(() => {
-        fetchReview();
-    }, []);
+        async function loadData() {
+            try {
+                const reviewRes = await api.get(`/reviews/${id}`);
+                const submissionRes = await api.get(`/submissions/${id}`);
 
-    async function fetchReview() {
-        try {
-            const response = await api.get(`/reviews/${id}`);
-            setReview(response.data.data);
-        } catch (err) {
-            console.error(err);
-            setError("Unable to load review.");
-        } finally {
-            setLoading(false);
+                setReview(reviewRes.data.data);
+                setSubmission(submissionRes.data.data);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
         }
-    }
 
-    if (loading) {
-        return <h2>Loading review...</h2>;
-    }
+        loadData();
+    }, [id]);
 
-    if (error) {
-        return <h2>{error}</h2>;
-    }
+    if (loading)
+        return (
+            <Container sx={{ mt: 5 }}>
+                <CircularProgress />
+            </Container>
+        );
+
+    if (!review)
+        return (
+            <Container sx={{ mt: 5 }}>
+                <Alert severity="error">
+                    Review not found.
+                </Alert>
+            </Container>
+        );
 
     return (
-        <div style={{ maxWidth: "900px", margin: "40px auto" }}>
-            <h1>AI Code Review</h1>
+        <Container sx={{ mt: 5 }}>
+            <Typography variant="h4" gutterBottom>
+                AI Code Review
+            </Typography>
 
-            <hr />
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6">
+                                Overall Score
+                            </Typography>
 
-            <h3>Overall Score</h3>
-            <p>{review.overallScore}</p>
+                            <Typography variant="h2">
+                                {review.overallScore}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
 
-            <h3>Issues Found</h3>
-            <p>{review.issuesFound}</p>
+                <Grid item xs={12} md={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6">
+                                Issues Found
+                            </Typography>
 
-            <h3>Improvements Suggested</h3>
-            <p>{review.improvementsSuggested}</p>
+                            <Typography variant="h2">
+                                {review.issuesFound}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
 
-            <h3>Feedback</h3>
+                <Grid item xs={12} md={4}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6">
+                                Suggestions
+                            </Typography>
 
-            <pre
-                style={{
-                    background: "#f5f5f5",
-                    padding: "20px",
-                    borderRadius: "8px",
-                    whiteSpace: "pre-wrap"
-                }}
-            >
-                {review.feedback}
-            </pre>
-        </div>
+                            <Typography variant="h2">
+                                {review.improvementsSuggested}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+
+            <Card sx={{ mt: 4 }}>
+                <CardContent>
+                    <Typography variant="h5">
+                        Submitted Code
+                    </Typography>
+
+                    <SyntaxHighlighter
+                        language={submission.language}
+                        style={oneDark}
+                    >
+                        {submission.codeContent}
+                    </SyntaxHighlighter>
+                </CardContent>
+            </Card>
+
+            <Card sx={{ mt: 4 }}>
+                <CardContent>
+                    <Typography variant="h5">
+                        AI Feedback
+                    </Typography>
+
+                    <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                        {review.feedback}
+                    </Typography>
+                </CardContent>
+            </Card>
+        </Container>
     );
 }
 
