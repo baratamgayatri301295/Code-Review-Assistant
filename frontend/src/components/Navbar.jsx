@@ -1,40 +1,33 @@
 import { Link } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import CodeIcon from "@mui/icons-material/Code";
 
 function Navbar() {
     return (
-        <nav
-            style={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "15px 40px",
-                background: "#222",
-            }}
-        >
-            <h2 style={{ color: "white" }}>Code Review Assistant</h2>
+        <AppBar position="static">
+            <Toolbar>
+                <CodeIcon sx={{ mr: 1 }} />
 
-            <div>
-                <Link
-                    to="/"
-                    style={{ color: "white", marginRight: "20px", textDecoration: "none" }}
+                <Typography
+                    variant="h6"
+                    sx={{ flexGrow: 1, fontWeight: "bold" }}
                 >
+                    Code Review Assistant
+                </Typography>
+
+                <Button color="inherit" component={Link} to="/">
                     Home
-                </Link>
+                </Button>
 
-                <Link
-                    to="/submit"
-                    style={{ color: "white", marginRight: "20px", textDecoration: "none" }}
-                >
+                <Button color="inherit" component={Link} to="/submit">
                     Submit Code
-                </Link>
+                </Button>
 
-                <Link
-                    to="/history"
-                    style={{ color: "white", textDecoration: "none" }}
-                >
+                <Button color="inherit" component={Link} to="/history">
                     History
-                </Link>
-            </div>
-        </nav>
+                </Button>
+            </Toolbar>
+        </AppBar>
     );
 }
 
