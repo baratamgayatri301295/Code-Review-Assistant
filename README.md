@@ -44,6 +44,18 @@ An AI-powered full-stack code review application that allows users to submit sou
 - OpenAI GPT API
 
 ---
+## 📸 Screenshots
+
+### Code upload form
+![Code upload form](docs/images/Screenshot6.png)
+![Code upload form](docs/images/Screenshot7.png)
+
+### Review results with feedback
+![Review results](docs/images/Screenshot8.png)
+![Review results](docs/images/Screenshot9.png)
+
+### Issues found and suggestions
+![suggestions](docs/images/Screenshot10.png)
 
 ## 📂 Project Structure
 
