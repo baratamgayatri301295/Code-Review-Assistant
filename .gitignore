@@ -1,0 +1,20 @@
+# Maven
+target/
+*.jar
+
+# IntelliJ
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# Environment
+.env
+
+# Logs
+logs/
+*.log
